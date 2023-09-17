@@ -1,0 +1,39 @@
+.sections {
+	display: flex;
+	flex-direction: column;
+	max-width: var(--container);
+	margin: 0 auto;
+	padding: 1rem 0;
+    row-gap: 1rem;
+	.aside {
+		display: flex;
+        align-items: center;
+		column-gap: 1rem;
+		font-size: 1.1rem;
+		font-weight: 700;
+        & > *:hover{
+            cursor: pointer;
+        }
+		a {
+			text-transform: uppercase;
+			&:hover {
+				cursor: pointer;
+                color: color-mix(in srgb, rgb(var(--background-rgb)), black 30%);
+			}
+		}
+		input {
+			background: lightblue;
+			&:disabled {
+				background: lightcoral;
+			}
+		}
+		button, input {
+            padding: .5rem;
+            outline: 2px solid white;
+            border: 1px solid black;
+            border-radius: 6px;
+		}
+	}
+	.content {
+	}
+}
