@@ -1,0 +1,18 @@
+.pagination {
+	display: flex;
+	column-gap: 5px;
+	button {
+		width: 30px;
+		aspect-ratio: 1/1;
+		color: blanchedalmond;
+		background: color-mix(in srgb, cornflowerblue, black 70%);
+		border: 1px solid color-mix(in srgb, darkred, black 70%);
+		&:hover {
+			cursor: pointer;
+            opacity: 0.8;
+		}
+        &.active{
+            background: red;
+        }
+	}
+}

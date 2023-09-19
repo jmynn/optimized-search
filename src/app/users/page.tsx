@@ -1,5 +1,5 @@
 'use server'
-import Contents from '@/Contents'
+import Contents from '@/components/Contents/Contents'
 import { ReactNode } from 'react'
 
 const page = ():ReactNode => {

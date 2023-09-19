@@ -1,8 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { ReactNode, useContext } from 'react'
-import styles from './Sections.module.scss'
-import { searchContext } from './SearchContext'
+import styles from '../Sections/Sections.module.scss'
+import { searchContext } from '../../SearchContext'
 
 const SearchBar = ():ReactNode => {
     const {disabled, search, searcher} = useContext(searchContext)

@@ -1,8 +1,8 @@
 'use server'
 import { FunctionComponent, ReactNode, useContext } from 'react'
 import styles from './Sections.module.scss'
-import SearchContext from './SearchContext'
-import SearchBar from './SearchBar'
+import SearchContext from '../../SearchContext'
+import SearchBar from '../SearchBar/SearchBar'
 
 type Sections = {
     children: ReactNode

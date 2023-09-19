@@ -1,82 +1,71 @@
 'use client'
 import axios from "axios"
-import { createContext, ReactNode, useCallback, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useMemo, useState, Dispatch, SetStateAction } from "react"
+import { TCards, TIndexes, TPost, TUser, TValue } from "./types/types"
 
 export const searchContext = createContext<TValue>({} as TValue)
+export const cardsCount: number = 10
 
-type TPost = {
-    userId: number
-    id: number
-    title: string
-    body: string
-}
-type TAddress = {
-    street: string
-    suite: string
-    city: string
-    zipcode: string
-    geo: {
-        lat: number
-        lng: number
-    }
-}
-type TCompany = {
-    name: string
-    catchPhrase: string
-    bs: string
-}
-type TUser = {
-    id: number
-    name: string
-    username: string
-    email: string
-    address: TAddress
-    phone: string
-    website: string
-    company: TCompany
-}
-type TValue = {
-    search: string
-    current: (TPost | TUser)[]
-    fetcher: (pathname: string) => Promise<void>
-    searcher: (str: string) => void
-    disabled: boolean
-}
-
-const SearchContext = ({children} : {children :  ReactNode}):ReactNode => {
+const SearchContext = ({ children }: { children: ReactNode }): ReactNode => {
     const [search, setSearch] = useState<string>('')
-    const [cards, setCards] = useState<(TPost| TUser)[]>([] as (TPost | TUser)[])
+    const [cards, setCards] = useState<TCards>({
+        data: [] as (TPost | TUser)[],
+        current: [] as (TPost | TUser)[]
+    })
 
-    const [current, setCurrent] = useState<(TPost | TUser)[]>([] as (TPost | TUser)[])
     const [disabled, setDisabled] = useState<boolean>(true)
 
-    const fetcher = useCallback(async (pathname: string) => { 
-        const {data} = await axios.get(`https://jsonplaceholder.typicode.com${pathname}`)
-        setCards(data)
-        setCurrent(data)
+    const [contentIndexes, setContentIndexes] = useState<TIndexes>({
+        contentStart: 0,
+        contentEnd: 10,
+        pageNumbers: [],
+    })
+
+    const fetcher = useCallback(async (pathname: string): Promise<void> => { 
+        const { data }: { data: (TPost | TUser)[] } = await axios.get(`https://jsonplaceholder.typicode.com${pathname}`)
+        setCards({
+            data, 
+            current: data
+        })
         setDisabled(data?.length ? false : true)
+        setContentIndexes(prev => {
+            const pages: number[] = []
+            for (let i = 0; i < (data.length / cardsCount); i++) pages.push(i)
+            return {...prev, pageNumbers: pages}
+        })
     }, [])
 
-    const searcher = useCallback((str: string) => {
+    const searcher = useCallback((str: string) => { 
         setSearch(str)
-        setCurrent(cards && [...cards].filter(item => {
-            if(str === '') return item
-            if('userId' in item) {
-                if(item.title.toLowerCase().includes(str) || item.body.toLowerCase().includes(str)) return item
-            } else if(item.name.toLowerCase().includes(str)) return item
-            
-        }))
+        setCards((prev) => {
+            if(!cards) return {...prev, current: []}
+            const filtered = [...prev.data].filter(item => {
+                if (str === '') return item
+                if ('userId' in item) {
+                    if (item.title.toLowerCase().includes(str) || item.body.toLowerCase().includes(str)) return item
+                } else if (item.name.toLowerCase().includes(str)) return item
+            })
+            setContentIndexes(prev => {
+                const pages: number[] = []
+                for (let i = 0; i < (filtered.length / cardsCount); i++) pages.push(i)
+                return {...prev, pageNumbers: pages}
+            })
+            return {...prev, current: filtered}
+        })
     }, [cards])
 
     const resultValue = useMemo(() => ({
         search,
-        current,
+        cards,
         disabled,
 
         fetcher,
-        searcher
+        searcher,
 
-    }), [search, current, fetcher, searcher, disabled])
+        contentIndexes,
+        setContentIndexes
+
+    }), [search, cards, fetcher, searcher, disabled, contentIndexes])
 
     return (
         <searchContext.Provider value={resultValue}>

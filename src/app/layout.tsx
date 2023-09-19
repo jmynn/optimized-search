@@ -1,4 +1,4 @@
-import Sections from '@/Sections'
+import Sections from '@/components/Sections/Sections'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
